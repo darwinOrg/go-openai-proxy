@@ -1,4 +1,4 @@
-module github.com/darwinOrg/openai_proxy
+module github.com/darwinOrg/go-openai-proxy
 
 go 1.19
 
