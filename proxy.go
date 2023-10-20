@@ -3,6 +3,7 @@ package openai_proxy
 import (
 	"context"
 	dgctx "github.com/darwinOrg/go-common/context"
+	dgerr "github.com/darwinOrg/go-common/enums/error"
 	dglogger "github.com/darwinOrg/go-logger"
 	"github.com/darwinOrg/go-openai"
 	"github.com/darwinOrg/go-web/wrapper"
@@ -20,6 +21,20 @@ func NewProxyClientWithToken(proxyBaseUrl string, authToken string) *openai.Clie
 	config := openai.DefaultConfig(authToken)
 	config.BaseURL = proxyBaseUrl
 	return openai.NewClientWithConfig(config)
+}
+
+func SimpleChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (string, error) {
+	response, err := CreateChatCompletion(client, ctx, request)
+
+	if err != nil {
+		return "", err
+	}
+
+	if len(response.Choices) == 0 {
+		return "", dgerr.SYSTEM_ERROR
+	}
+
+	return response.Choices[0].Message.Content, nil
 }
 
 func CreateChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
