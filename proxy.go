@@ -21,12 +21,12 @@ func NewProxyClient(baseUrl string) *openai.Client {
 	return NewProxyClientWithToken(baseUrl, "none")
 }
 
-func NewProxyClientWithTokenDefault(baseUrl string, apiKey string) {
-	DefaultClient = NewProxyClientWithToken(baseUrl, apiKey)
+func NewProxyClientWithTokenDefault(baseUrl string, authToken string) {
+	DefaultClient = NewProxyClientWithToken(baseUrl, authToken)
 }
 
-func NewProxyClientWithToken(baseUrl string, apiKey string) *openai.Client {
-	config := openai.DefaultConfig(apiKey)
+func NewProxyClientWithToken(baseUrl string, authToken string) *openai.Client {
+	config := openai.DefaultConfig(authToken)
 	config.BaseURL = baseUrl
 	return openai.NewClientWithConfig(config)
 }
