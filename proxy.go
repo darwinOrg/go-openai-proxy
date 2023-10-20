@@ -73,6 +73,10 @@ func CreateCompletion(client *openai.Client, ctx *dgctx.DgContext, request opena
 	return response, err
 }
 
+func BindRouterDefault(rg *gin.RouterGroup) {
+	BindRouter(rg, DefaultClient)
+}
+
 func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 	wrapper.Post(&wrapper.RequestHolder[openai.ChatCompletionRequest, openai.ChatCompletionResponse]{
 		RouterGroup:  rg,
