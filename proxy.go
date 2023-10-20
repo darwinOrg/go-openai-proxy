@@ -13,19 +13,25 @@ import (
 
 var DefaultClient *openai.Client
 
-// NewProxyClient creates new OpenAI API proxy client.
-func NewProxyClient(proxyBaseUrl string) *openai.Client {
-	return NewProxyClientWithToken(proxyBaseUrl, "none")
+func NewProxyClientDefault(baseUrl string) {
+	DefaultClient = NewProxyClient(baseUrl)
 }
 
-// NewProxyClientWithToken creates new OpenAI API proxy client with auth token.
-func NewProxyClientWithToken(proxyBaseUrl string, authToken string) *openai.Client {
-	config := openai.DefaultConfig(authToken)
-	config.BaseURL = proxyBaseUrl
+func NewProxyClient(baseUrl string) *openai.Client {
+	return NewProxyClientWithToken(baseUrl, "none")
+}
+
+func NewProxyClientWithTokenDefault(baseUrl string, apiKey string) {
+	DefaultClient = NewProxyClientWithToken(baseUrl, apiKey)
+}
+
+func NewProxyClientWithToken(baseUrl string, apiKey string) *openai.Client {
+	config := openai.DefaultConfig(apiKey)
+	config.BaseURL = baseUrl
 	return openai.NewClientWithConfig(config)
 }
 
-func DefaultSimpleChatCompletion(ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (string, error) {
+func SimpleChatCompletionDefault(ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (string, error) {
 	return SimpleChatCompletion(DefaultClient, ctx, request)
 }
 
@@ -43,7 +49,7 @@ func SimpleChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request o
 	return response.Choices[0].Message.Content, nil
 }
 
-func DefaultCreateChatCompletion(ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
+func CreateChatCompletionDefault(ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
 	return CreateChatCompletion(DefaultClient, ctx, request)
 }
 
@@ -55,7 +61,7 @@ func CreateChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request o
 	return response, err
 }
 
-func DefaultCreateCompletion(ctx *dgctx.DgContext, request openai.CompletionRequest) (openai.CompletionResponse, error) {
+func CreateCompletionDefault(ctx *dgctx.DgContext, request openai.CompletionRequest) (openai.CompletionResponse, error) {
 	return CreateCompletion(DefaultClient, ctx, request)
 }
 
