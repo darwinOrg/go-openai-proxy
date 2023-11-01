@@ -42,8 +42,8 @@ func SimpleChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request o
 		return "", err
 	}
 
-	if len(response.Choices) == 0 {
-		return "", dgerr.SYSTEM_ERROR
+	if response.Usage.PromptTokens == 0 || len(response.Choices) == 0 {
+		return "", dgerr.ILLEGAL_OPERATION
 	}
 
 	return response.Choices[0].Message.Content, nil
