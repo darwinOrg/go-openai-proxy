@@ -27,6 +27,8 @@ github.com/darwinOrg/go-validator-ext v0.0.3 h1:mS/wiYITKJ//FO+XCcEWabWibwPSlVt+
 github.com/darwinOrg/go-validator-ext v0.0.3/go.mod h1:AY2v44qPq0a0fqwk5a8MCckCJ4MXyJQPfoYT6dUtdPQ=
 github.com/darwinOrg/go-web v0.0.17 h1:MXjKvbSxl5sHeDZDZuzlqYewP1ws1Rvq/QHGgKsbJYg=
 github.com/darwinOrg/go-web v0.0.17/go.mod h1:4RVZsIu7MYtfxBi3r3XJkxDBTzqCaDxu3MVGO2FNDzU=
+github.com/darwinOrg/go-web v0.0.21 h1:3y+jD9Axco8ivQrtAL1V9JsKY5q0mR0tz+YIAyrxE8Y=
+github.com/darwinOrg/go-web v0.0.21/go.mod h1:irCGQr2UACSJW79jr8UUSXkvEOV4HijT8C+8yR+j7/4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

@@ -6,7 +6,7 @@ require (
 	github.com/darwinOrg/go-common v0.0.22
 	github.com/darwinOrg/go-logger v0.0.1
 	github.com/darwinOrg/go-openai v0.0.6
-	github.com/darwinOrg/go-web v0.0.17
+	github.com/darwinOrg/go-web v0.0.21
 	github.com/gin-gonic/gin v1.9.1
 )
 
