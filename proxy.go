@@ -16,7 +16,7 @@ var DefaultClient *openai.Client
 const BizTypeKey = "openaiBizType"
 const BizIdKey = "openaiBizId"
 
-type ChatCompletionResponseCallback func(ctx *dgctx.DgContext, response openai.ChatCompletionResponse)
+type ChatCompletionResponseCallback func(ctx *dgctx.DgContext, request openai.ChatCompletionRequest, response openai.ChatCompletionResponse)
 
 func NewProxyClientDefault(baseUrl string) {
 	DefaultClient = NewProxyClient(baseUrl)
@@ -68,7 +68,7 @@ func CreateChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request o
 			GetBizType(ctx), GetBizId(ctx), request.Model, response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens)
 
 		if responseCallback != nil {
-			responseCallback(ctx, response)
+			responseCallback(ctx, request, response)
 		}
 	}
 
