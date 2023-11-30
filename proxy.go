@@ -13,7 +13,7 @@ import (
 
 var DefaultClient *openai.Client
 
-const bizIdKey = "openaiBizId"
+const BizIdKey = "openaiBizId"
 
 func NewProxyClientDefault(baseUrl string) {
 	DefaultClient = NewProxyClient(baseUrl)
@@ -77,7 +77,8 @@ func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 		RouterGroup:  rg,
 		RelativePath: "/chat/completions",
 		NonLogin:     true,
-		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, request *openai.ChatCompletionRequest) openai.ChatCompletionResponse {
+		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, request *openai.ChatCompletionRequest) openai.ChatCompletionResponse {
+			ctx.SetExtraKeyValue(BizIdKey, c.Query(BizIdKey))
 			response, err := CreateChatCompletion(client, ctx, *request)
 			if err != nil {
 				return openai.ChatCompletionResponse{}
@@ -89,11 +90,11 @@ func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 }
 
 func SetBizId(ctx *dgctx.DgContext, bizId string) {
-	ctx.SetExtraKeyValue(bizIdKey, bizId)
+	ctx.SetExtraKeyValue(BizIdKey, bizId)
 }
 
 func GetBizId(ctx *dgctx.DgContext) string {
-	bizId := ctx.GetExtraValue(bizIdKey)
+	bizId := ctx.GetExtraValue(BizIdKey)
 	if bizId == nil {
 		return ""
 	}
