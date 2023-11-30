@@ -13,6 +13,8 @@ import (
 
 var DefaultClient *openai.Client
 
+const bizIdKey = "openaiBizId"
+
 func NewProxyClientDefault(baseUrl string) {
 	DefaultClient = NewProxyClient(baseUrl)
 }
@@ -56,20 +58,13 @@ func CreateChatCompletionDefault(ctx *dgctx.DgContext, request openai.ChatComple
 func CreateChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
 	start := time.Now().UnixMilli()
 	response, err := client.CreateChatCompletion(context.Background(), request)
-	dglogger.Infof(ctx, "create chat completion, request: %+v, response: %+v, error: %v, cost: %d ms",
-		request, response, err, time.Now().UnixMilli()-start)
-	return response, err
-}
+	dglogger.Infof(ctx, "[bizId: %s] create chat completion, request: %+v, response: %+v, error: %v, cost: %d ms",
+		GetBizId(ctx), request, response, err, time.Now().UnixMilli()-start)
+	if err == nil {
+		dglogger.Infof(ctx, "[bizId: %s] Model: %s, PromptTokens: %d, CompletionTokens: %d, TotalTokens: %d",
+			GetBizId(ctx), request.Model, response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens)
+	}
 
-func CreateCompletionDefault(ctx *dgctx.DgContext, request openai.CompletionRequest) (openai.CompletionResponse, error) {
-	return CreateCompletion(DefaultClient, ctx, request)
-}
-
-func CreateCompletion(client *openai.Client, ctx *dgctx.DgContext, request openai.CompletionRequest) (openai.CompletionResponse, error) {
-	start := time.Now().UnixMilli()
-	response, err := client.CreateCompletion(context.Background(), request)
-	dglogger.Infof(ctx, "create completion, request: %+v, response: %+v, error: %v, cost: %d ms",
-		request, response, err, time.Now().UnixMilli()-start)
 	return response, err
 }
 
@@ -91,19 +86,17 @@ func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 			return response
 		},
 	})
+}
 
-	wrapper.Post(&wrapper.RequestHolder[openai.CompletionRequest, openai.CompletionResponse]{
-		RouterGroup:  rg,
-		RelativePath: "/completions",
-		NonLogin:     true,
-		BizHandler: func(_ *gin.Context, ctx *dgctx.DgContext, request *openai.CompletionRequest) openai.CompletionResponse {
-			response, err := CreateCompletion(client, ctx, *request)
-			if err != nil {
-				return openai.CompletionResponse{}
-			}
+func SetBizId(ctx *dgctx.DgContext, bizId string) {
+	ctx.SetExtraKeyValue(bizIdKey, bizId)
+}
 
-			return response
-		},
-	})
+func GetBizId(ctx *dgctx.DgContext) string {
+	bizId := ctx.GetExtraValue(bizIdKey)
+	if bizId == nil {
+		return ""
+	}
 
+	return bizId.(string)
 }
