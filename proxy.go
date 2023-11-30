@@ -78,7 +78,10 @@ func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 		RelativePath: "/chat/completions",
 		NonLogin:     true,
 		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, request *openai.ChatCompletionRequest) openai.ChatCompletionResponse {
-			ctx.SetExtraKeyValue(BizIdKey, c.Query(BizIdKey))
+			bizId := c.Query(BizIdKey)
+			if bizId != "" {
+				SetBizId(ctx, bizId)
+			}
 			response, err := CreateChatCompletion(client, ctx, *request)
 			if err != nil {
 				return openai.ChatCompletionResponse{}
