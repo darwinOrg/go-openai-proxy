@@ -13,6 +13,7 @@ import (
 
 var DefaultClient *openai.Client
 
+const BizTypeKey = "openaiBizType"
 const BizIdKey = "openaiBizId"
 
 type ChatCompletionResponseCallback func(ctx *dgctx.DgContext, response openai.ChatCompletionResponse)
@@ -60,11 +61,11 @@ func CreateChatCompletionDefault(ctx *dgctx.DgContext, request openai.ChatComple
 func CreateChatCompletion(client *openai.Client, ctx *dgctx.DgContext, request openai.ChatCompletionRequest, responseCallback ChatCompletionResponseCallback) (openai.ChatCompletionResponse, error) {
 	start := time.Now().UnixMilli()
 	response, err := client.CreateChatCompletion(context.Background(), request)
-	dglogger.Infof(ctx, "[bizId: %s] create chat completion, request: %+v, response: %+v, error: %v, cost: %d ms",
-		GetBizId(ctx), request, response, err, time.Now().UnixMilli()-start)
+	dglogger.Infof(ctx, "[bizType: %s, bizId: %s] create chat completion, request: %+v, response: %+v, error: %v, cost: %d ms",
+		GetBizType(ctx), GetBizId(ctx), request, response, err, time.Now().UnixMilli()-start)
 	if err == nil {
-		dglogger.Infof(ctx, "[bizId: %s] Model: %s, PromptTokens: %d, CompletionTokens: %d, TotalTokens: %d",
-			GetBizId(ctx), request.Model, response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens)
+		dglogger.Infof(ctx, "[bizType: %s, bizId: %s] Model: %s, PromptTokens: %d, CompletionTokens: %d, TotalTokens: %d",
+			GetBizType(ctx), GetBizId(ctx), request.Model, response.Usage.PromptTokens, response.Usage.CompletionTokens, response.Usage.TotalTokens)
 
 		if responseCallback != nil {
 			responseCallback(ctx, response)
@@ -84,10 +85,16 @@ func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 		RelativePath: "/chat/completions",
 		NonLogin:     true,
 		BizHandler: func(c *gin.Context, ctx *dgctx.DgContext, request *openai.ChatCompletionRequest) openai.ChatCompletionResponse {
+			bizType := c.Query(BizTypeKey)
+			if bizType != "" {
+				SetBizType(ctx, bizType)
+			}
+
 			bizId := c.Query(BizIdKey)
 			if bizId != "" {
 				SetBizId(ctx, bizId)
 			}
+
 			response, err := CreateChatCompletion(client, ctx, *request, nil)
 			if err != nil {
 				return openai.ChatCompletionResponse{}
@@ -96,6 +103,19 @@ func BindRouter(rg *gin.RouterGroup, client *openai.Client) {
 			return response
 		},
 	})
+}
+
+func SetBizType(ctx *dgctx.DgContext, bizType string) {
+	ctx.SetExtraKeyValue(BizTypeKey, bizType)
+}
+
+func GetBizType(ctx *dgctx.DgContext) string {
+	bizType := ctx.GetExtraValue(BizTypeKey)
+	if bizType == nil {
+		return ""
+	}
+
+	return bizType.(string)
 }
 
 func SetBizId(ctx *dgctx.DgContext, bizId string) {
