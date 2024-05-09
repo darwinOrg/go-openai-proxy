@@ -5,9 +5,9 @@ import (
 	dgctx "github.com/darwinOrg/go-common/context"
 	dgerr "github.com/darwinOrg/go-common/enums/error"
 	dglogger "github.com/darwinOrg/go-logger"
-	"github.com/darwinOrg/go-openai"
 	"github.com/darwinOrg/go-web/wrapper"
 	"github.com/gin-gonic/gin"
+	"github.com/sashabaranov/go-openai"
 	"time"
 )
 
